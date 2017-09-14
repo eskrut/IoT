@@ -19,16 +19,13 @@ void configModeCallback (WiFiManager *myWiFiManager) {
   Serial.println(myWiFiManager->getConfigPortalSSID());
 }
 
-const int led = 13;
+const int magPin = 5;
 
 void handleRoot() {
-  digitalWrite(led, 1);
   server.send(200, "text/plain", "hello from esp8266!");
-  digitalWrite(led, 0);
 }
 
 void handleNotFound(){
-  digitalWrite(led, 1);
   String message = "File Not Found\n\n";
   message += "URI: ";
   message += server.uri();
@@ -41,10 +38,11 @@ void handleNotFound(){
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
   server.send(404, "text/plain", message);
-  digitalWrite(led, 0);
 }
 
 void setup() {
+  pinMode(magPin, OUTPUT);
+  digitalWrite(magPin, 0);
   // put your setup code here, to run once:
   Serial.begin(115200);
 
@@ -120,8 +118,14 @@ void setup() {
 
   server.on("/", handleRoot);
 
-  server.on("/inline", [](){
-    server.send(200, "text/plain", "this works as well");
+  server.on("/mag/on", [](){
+    server.send(200, "text/plain", "turning magnet on");
+    digitalWrite(magPin, 1);
+  });
+
+  server.on("/mag/off", [](){
+    server.send(200, "text/plain", "turning magnet off");
+    digitalWrite(magPin, 0);
   });
 
   server.onNotFound(handleNotFound);
