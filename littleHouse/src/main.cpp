@@ -128,11 +128,11 @@ void setup() {
   server.on("/", handleRoot);
 
   for(const auto &rid : nameIDMap) {
-    server.on(("/" + rid.first + "/on").c_str(), [&rid](){
+    server.on(("/" + rid.first + "/1").c_str(), [&rid](){
       server.send(200, "text/plain", ("turning on " + rid.first).c_str());
       turmLight(rid.first, 1);
     });
-    server.on(("/" + rid.first + "/off").c_str(), [&rid](){
+    server.on(("/" + rid.first + "/0").c_str(), [&rid](){
       server.send(200, "text/plain", ("turning off " + rid.first).c_str());
       turmLight(rid.first, 0);
     });
@@ -144,12 +144,12 @@ void setup() {
   }
 
   server.on("/on", [](){
-    server.send(200, "text/plain", "turning magnet on");
+    server.send(200, "text/plain", "turning all lights on");
     turmLight("all", 1);
   });
 
   server.on("/off", [](){
-    server.send(200, "text/plain", "turning magnet off");
+    server.send(200, "text/plain", "turning all lights off");
     turmLight("all", 0);
   });
 
