@@ -20,9 +20,10 @@ void configModeCallback (WiFiManager *myWiFiManager) {
 }
 
 const int magPin = 5;
+int magnetState = 0;
 
 void handleRoot() {
-  server.send(200, "text/plain", "hello from esp8266!");
+  server.send(200, "text/plain", "this is magnet hook");
 }
 
 void handleNotFound(){
@@ -42,7 +43,8 @@ void handleNotFound(){
 
 void setup() {
   pinMode(magPin, OUTPUT);
-  digitalWrite(magPin, 0);
+  magnetState = 0;
+  digitalWrite(magPin, magnetState);
   // put your setup code here, to run once:
   Serial.begin(115200);
 
@@ -120,12 +122,21 @@ void setup() {
 
   server.on("/mag/on", [](){
     server.send(200, "text/plain", "turning magnet on");
-    digitalWrite(magPin, 1);
+    magnetState = 1;
+    digitalWrite(magPin, magnetState);
   });
 
   server.on("/mag/off", [](){
     server.send(200, "text/plain", "turning magnet off");
-    digitalWrite(magPin, 0);
+    magnetState = 0;
+    digitalWrite(magPin, magnetState);
+  });
+
+  server.on("/mag/state", [](){
+    if(magnetState)
+      server.send(200, "text/plain", "1");
+    else
+      server.send(200, "text/plain", "0");
   });
 
   server.onNotFound(handleNotFound);
